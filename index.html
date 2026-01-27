@@ -1,14 +1,106 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로또 번호 추천 (보너스 포함)</title>
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; 
+      padding: 24px; 
+      background-color: #fff;
+      color: #000;
+    }
+    body.dark-mode {
+      background-color: #121212;
+      color: #fff;
+    }
+    button { 
+      padding: 10px 14px; 
+      cursor: pointer; 
+    }
+    #result { 
+      margin-top: 16px; 
+      font-size: 18px; 
+      line-height: 1.8; 
+    }
+    .ball {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 999px;
+      margin-right: 8px; background: #f2f4f8;
+      border: 1px solid #d0d7de;
+      font-weight: 700;
+      color: #000;
+    }
+    .dark-mode .ball {
+      background: #333;
+      border-color: #555;
+      color: #fff;
+    }
+    .bonus { 
+      background: #fff2cc; 
+      border-color: #d6b656; 
+    }
+    .dark-mode .bonus {
+      background: #5c4d1f;
+      border-color: #d6b656;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+  <h1>로또 번호 추천기 (보너스 포함)</h1>
+  <button id="drawBtn" type="button">추첨하기</button>
+  <button id="themeBtn" type="button">테마 변경</button>
+
+  <div id="result" aria-live="polite"></div>
+
+  <script>
+    // 1~45 정수 랜덤 (min/max 포함) [web:24]
+    function getRandomIntInclusive(min, max) {
+      const minCeiled = Math.ceil(min);
+      const maxFloored = Math.floor(max);
+      return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+    }
+
+    function drawLottoWithBonus() {
+      const nums = new Set(); // Set은 중복 없는(고유한) 값만 저장 [web:32]
+
+      while (nums.size < 7) {
+        nums.add(getRandomIntInclusive(1, 45));
+      }
+
+      const all = Array.from(nums).sort((a, b) => a - b);
+      const bonus = all.pop();      // 마지막 1개를 보너스로
+      const main = all;             // 남은 6개가 메인
+
+      return { main, bonus };
+    }
+
+    const drawBtn = document.getElementById("drawBtn");
+    const themeBtn = document.getElementById("themeBtn");
+    const resultEl = document.getElementById("result");
+    const body = document.body;
+
+    drawBtn.addEventListener("click", () => {
+      const { main, bonus } = drawLottoWithBonus();
+
+      resultEl.innerHTML = `
+        <div>메인: ${main.map(n => `<span class="ball">${n}</span>`).join("")}</div>
+        <div>보너스: <span class="ball bonus">${bonus}</span></div>
+      `;
+    });
+
+    themeBtn.addEventListener("click", () => {
+      body.classList.toggle("dark-mode");
+      const isDarkMode = body.classList.contains("dark-mode");
+      localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+    });
+
+    // 페이지 로드 시 저장된 테마 적용
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      body.classList.add("dark-mode");
+    }
+  </script>
 </body>
 </html>
