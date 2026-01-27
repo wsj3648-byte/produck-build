@@ -54,6 +54,25 @@
 
   <div id="result" aria-live="polite"></div>
 
+  <h2>제휴 문의</h2>
+  <form action="https://formspree.io/f/mlgbpjra" method="POST">
+    <p>
+      <label for="name">이름:</label><br>
+      <input type="text" id="name" name="name" required style="width: 300px; padding: 8px;">
+    </p>
+    <p>
+      <label for="email">이메일:</label><br>
+      <input type="email" id="email" name="email" required style="width: 300px; padding: 8px;">
+    </p>
+    <p>
+      <label for="message">메시지:</label><br>
+      <textarea id="message" name="message" required rows="5" style="width: 300px; padding: 8px;"></textarea>
+    </p>
+    <p>
+      <button type="submit" style="padding: 10px 15px;">문의 보내기</button>
+    </p>
+  </form>
+
   <script>
     // 1~45 정수 랜덤 (min/max 포함) [web:24]
     function getRandomIntInclusive(min, max) {
