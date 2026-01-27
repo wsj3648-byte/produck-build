@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로또 번호 추천</title>
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; 
+      background-color: #fff;
+      color: #000;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+    body.dark-mode {
+      background-color: #121212;
+      color: #fff;
+    }
+    button { 
+      padding: 10px 14px; 
+      cursor: pointer; 
+      margin: 5px;
+    }
+    .lotto-row {
+      margin-bottom: 10px;
+    }
+    .ball {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 999px;
+      margin-right: 8px; background: #f2f4f8;
+      border: 1px solid #d0d7de;
+      font-weight: 700;
+      color: #000;
+    }
+    .dark-mode .ball {
+      background: #333;
+      border-color: #555;
+      color: #fff;
+    }
+    .bonus { 
+      background: #fff2cc; 
+      border-color: #d6b656; 
+    }
+    .dark-mode .bonus {
+      background: #5c4d1f;
+      border-color: #d6b656;
+    }
+  </style>
+</head>
+<body>
+  <h1>로또 번호 추천</h1>
+  <button id="themeBtn" type="button">테마 변경</button>
+  <button id="draw-lotto-btn">5줄 추첨하기</button>
+  <div id="lotto-results"></div>
+
+  <a href="index.html" style="margin-top: 20px;">홈으로 돌아가기</a>
+  
+  <script>
+    // --- Dark Mode ---
+    const themeBtn = document.getElementById("themeBtn");
+    const body = document.body;
+
+    themeBtn.addEventListener("click", () => {
+      body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+    });
+    if (localStorage.getItem("theme") === "dark") {
+      body.classList.add("dark-mode");
+    }
+
+    // --- Lotto Generator ---
+    const drawLottoBtn = document.getElementById('draw-lotto-btn');
+    const lottoResults = document.getElementById('lotto-results');
+
+    function getRandomIntInclusive(min, max) {
+      const minCeiled = Math.ceil(min);
+      const maxFloored = Math.floor(max);
+      return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+    }
+
+    function drawLottoWithBonus() {
+      const nums = new Set();
+      while (nums.size < 7) {
+        nums.add(getRandomIntInclusive(1, 45));
+      }
+      const all = Array.from(nums).sort((a, b) => a - b);
+      const bonus = all.pop();
+      const main = all;
+      return { main, bonus };
+    }
+
+    drawLottoBtn.addEventListener('click', () => {
+        lottoResults.innerHTML = ''; // Clear previous results
+        for (let i = 0; i < 5; i++) {
+            const { main, bonus } = drawLottoWithBonus();
+            const row = document.createElement('div');
+            row.classList.add('lotto-row');
+            row.innerHTML = `
+                <div>
+                    ${main.map(n => `<span class="ball">${n}</span>`).join("")}
+                    <span class="ball bonus">${bonus}</span>
+                </div>
+            `;
+            lottoResults.appendChild(row);
+        }
+    });
+  </script>
+</body>
+</html>
